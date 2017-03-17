@@ -104,7 +104,7 @@
                                 </ports> 
                                 <wait>
                                     <log>.*port: 3306  MySQL Community Server.*</log>
-                                    <time>60000</time>
+                                    <time>120000</time>
                                 </wait>
                             </run>
                         </image>
