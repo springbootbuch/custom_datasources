@@ -90,7 +90,7 @@
                             </run>
                         </image>
                         <image>
-                            <name>mysql:5.6</name>
+                            <name>mariadb:5.5</name>
                             <alias>mysql-db</alias>
                             <run>
                                 <env>
@@ -103,8 +103,8 @@
                                     <port>3306:3306</port>                  
                                 </ports> 
                                 <wait>
-                                    <log>.*port: 3306  MySQL Community Server.*</log>
-                                    <time>120000</time>
+                                    <log>port: 3306  mariadb.org binary distribution</log>
+                                    <time>60000</time>
                                 </wait>
                             </run>
                         </image>
