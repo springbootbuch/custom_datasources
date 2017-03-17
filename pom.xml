@@ -90,7 +90,7 @@
                             </run>
                         </image>
                         <image>
-                            <name>mysql:5.7.17</name>
+                            <name>mysql:5.6</name>
                             <alias>mysql-db</alias>
                             <run>
                                 <env>
