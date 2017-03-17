@@ -57,8 +57,57 @@
         </dependency>
     </dependencies>
 
-    <build>
+    <build>        
         <finalName>${project.artifactId}</finalName>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>0.20.0</version>
+                    <configuration>
+                        <images>
+                            <image>
+                                <name>postgres:9.6</name>
+                                <alias>postgres-db</alias>
+                                <run>
+                                    <env>
+                                        <POSTGRES_USER>spring_postgres</POSTGRES_USER>
+                                        <POSTGRES_PASSWORD>spring_postgres</POSTGRES_PASSWORD>
+                                    </env>              
+                                    <ports>
+                                        <port>5432:5432</port>                  
+                                    </ports>              
+                                    <wait>
+                                        <log>database system is ready to accept connections</log>
+                                        <time>60000</time>
+                                    </wait>
+                                </run>
+                            </image>
+                            <image>
+                                <name>mysql:5.7</name>
+                                <alias>mysql-db</alias>
+                                <run>
+                                    <env>
+                                        <MYSQL_DATABASE>spring_mysql</MYSQL_DATABASE>
+                                        <MYSQL_USER>spring_mysql</MYSQL_USER>
+                                        <MYSQL_PASSWORD>spring_mysql</MYSQL_PASSWORD>
+                                        <MYSQL_RANDOM_ROOT_PASSWORD>yes</MYSQL_RANDOM_ROOT_PASSWORD>
+                                    </env>
+                                    <ports>
+                                        <port>3306:3306</port>                  
+                                    </ports> 
+                                    <wait>
+                                        <log>port: 3306  MySQL Community Server</log>
+                                        <time>60000</time>
+                                    </wait>
+                                </run>
+                            </image>
+                        </images>
+                    </configuration>              
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -68,84 +117,7 @@
             </plugin>
             <plugin>
                 <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>0.20.0</version>
-                <configuration>
-                    <images>
-                        <image>
-                            <name>postgres:9.6.2</name>
-                            <alias>postgres-db</alias>
-                            <run>
-                                <env>
-                                    <POSTGRES_USER>spring_postgres</POSTGRES_USER>
-                                    <POSTGRES_PASSWORD>spring_postgres</POSTGRES_PASSWORD>
-                                </env>              
-                                <ports>
-                                    <port>5432:5432</port>                  
-                                </ports>              
-                                <wait>
-                                    <log>database system is ready to accept connections</log>
-                                    <time>40000</time>
-                                </wait>
-                            </run>
-                        </image>
-                        <image>
-                            <name>mysql:5.7</name>
-                            <alias>mysql-db</alias>
-                            <run>
-                                <env>
-                                    <MYSQL_DATABASE>spring_mysql</MYSQL_DATABASE>
-                                    <MYSQL_USER>spring_mysql</MYSQL_USER>
-                                    <MYSQL_PASSWORD>spring_mysql</MYSQL_PASSWORD>
-                                    <MYSQL_RANDOM_ROOT_PASSWORD>yes</MYSQL_RANDOM_ROOT_PASSWORD>
-                                </env>
-                                  <ports>
-                                    <port>3306:3306</port>                  
-                                </ports> 
-                                <wait>
-                                    <log>port: 3306  MySQL Community Server</log>
-                                    <time>120000</time>
-                                </wait>
-                            </run>
-                        </image>
-                    </images>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>prepare-it-database</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                        <configuration>
-                            <images>
-                                <image>                                    
-                                    <alias>postgres-db</alias>
-                                    <run>
-                                        <ports>
-                                            <port>postgres-db-it.port:5432</port>
-                                        </ports>                                       
-                                    </run>
-                                </image>
-                                <image>                                    
-                                    <alias>mysql-db</alias>
-                                    <run>
-                                        <ports>
-                                            <port>mysql-db-it.port:3306</port>
-                                        </ports>
-                                    </run>
-                                </image>
-                            </images>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>remove-it-database</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <artifactId>docker-maven-plugin</artifactId>               
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -169,6 +141,59 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>use-docker-for-it</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>                
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>                           
+                        <executions>
+                            <execution>
+                                <id>prepare-it-database</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                                <configuration>
+                                    <images>
+                                        <image>                                    
+                                            <alias>postgres-db</alias>
+                                            <run>
+                                                <ports>
+                                                    <port>postgres-db-it.port:5432</port>
+                                                </ports>                                       
+                                            </run>
+                                        </image>
+                                        <image>                                    
+                                            <alias>mysql-db</alias>
+                                            <run>
+                                                <ports>
+                                                    <port>mysql-db-it.port:3306</port>
+                                                </ports>
+                                            </run>
+                                        </image>
+                                    </images>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>remove-it-database</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <!-- DELETE ME -->
     <repositories>

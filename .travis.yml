@@ -1,8 +1,13 @@
-sudo: required
 language: java
 jdk:
   - oraclejdk8
 services:
-- docker
+- mysql
+- postgresql
+before_install:
+  - mysql -e "CREATE DATABASE spring_mysql;"
+  - mysql -e "CREATE USER 'spring_mysql' IDENTIFIED BY 'spring_mysql'";
+  - psql -c "CREATE DATABASE spring_postgres;" -U postgres
+  - psql -c "CREATE USER spring_postgres WITH PASSWORD 'spring_mysql';" -U postgres
 script:
-- mvn verify
+- mvn verify -P -use-docker-for-it
