@@ -47,6 +47,14 @@
             <artifactId>flexy-tomcatcp</artifactId>
             <version>1.2.7</version>
         </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -64,7 +72,6 @@
                 <version>0.20.0</version>
                 <configuration>
                     <images>
-
                         <image>
                             <name>postgres:9.6.2</name>
                             <alias>postgres-db</alias>
@@ -72,7 +79,10 @@
                                 <env>
                                     <POSTGRES_USER>spring_postgres</POSTGRES_USER>
                                     <POSTGRES_PASSWORD>spring_postgres</POSTGRES_PASSWORD>
-                                </env>
+                                </env>              
+                                <ports>
+                                    <port>5432:5432</port>                  
+                                </ports>              
                                 <wait>
                                     <log>database system is ready to accept connections</log>
                                     <time>40000</time>
@@ -84,18 +94,77 @@
                             <alias>mysql-db</alias>
                             <run>
                                 <env>
+                                    <MYSQL_DATABASE>spring_mysql</MYSQL_DATABASE>
                                     <MYSQL_USER>spring_mysql</MYSQL_USER>
                                     <MYSQL_PASSWORD>spring_mysql</MYSQL_PASSWORD>
                                     <MYSQL_RANDOM_ROOT_PASSWORD>yes</MYSQL_RANDOM_ROOT_PASSWORD>
                                 </env>
+                                  <ports>
+                                    <port>3306:3306</port>                  
+                                </ports> 
                                 <wait>
-                                    <log>ready for connections</log>
-                                    <time>40000</time>
+                                    <log>.*port: 3306  MySQL Community Server.*</log>
+                                    <time>60000</time>
                                 </wait>
                             </run>
                         </image>
-
                     </images>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>prepare-it-database</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <images>
+                                <image>                                    
+                                    <alias>postgres-db</alias>
+                                    <run>
+                                        <ports>
+                                            <port>postgres-db-it.port:5432</port>
+                                        </ports>                                       
+                                    </run>
+                                </image>
+                                <image>                                    
+                                    <alias>mysql-db</alias>
+                                    <run>
+                                        <ports>
+                                            <port>mysql-db-it.port:3306</port>
+                                        </ports>                                       
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>remove-it-database</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <forkCount>1</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <environmentVariables>
+                        <postgres.port>${postgres-db-it.port}</postgres.port>
+                        <mysql.port>${mysql-db-it.port}</mysql.port>
+                    </environmentVariables>
                 </configuration>
             </plugin>
         </plugins>
