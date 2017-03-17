@@ -133,6 +133,11 @@
                                         <ports>
                                             <port>mysql-db-it.port:3306</port>
                                         </ports>                                       
+                                                      <log>
+  <prefix>TC</prefix>
+  <date>default</date>
+  <color>cyan</color>
+</log>
                                     </run>
                                 </image>
                             </images>
