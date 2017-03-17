@@ -9,5 +9,7 @@ before_install:
   - mysql -e "CREATE USER 'spring_mysql' IDENTIFIED BY 'spring_mysql'";
   - psql -c "CREATE DATABASE spring_postgres;" -U postgres
   - psql -c "CREATE USER spring_postgres WITH PASSWORD 'spring_mysql';" -U postgres
+install: 
+- ./mvnw install -P -use-docker-for-it -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 script:
-- mvn verify -P -use-docker-for-it
+- ./mvnw verify -P -use-docker-for-it
