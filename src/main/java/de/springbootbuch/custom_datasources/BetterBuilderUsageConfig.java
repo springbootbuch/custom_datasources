@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
-@Configuration
 @Profile("better-builder-usage")
+@Configuration
 public class BetterBuilderUsageConfig {
 
 	@Bean
@@ -23,6 +23,7 @@ public class BetterBuilderUsageConfig {
 	@ConfigurationProperties("app.datasource")
 	public DataSource dataSource(
 		final DataSourceProperties properties) {
-		return properties.initializeDataSourceBuilder().build();
+		return properties
+			.initializeDataSourceBuilder().build();
 	}
 }
