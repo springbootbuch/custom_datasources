@@ -7,9 +7,9 @@ services:
 before_install:
   - psql -c 'create database spring_postgres;' -U postgres
 install: 
-  - ./mvnw -Dpostgres-db-it.port=5432 -Dapp.datasource_pg.username=postgres -Dapp.datasource_pg.username= -DskipTests=true -Dmaven.javadoc.skip=true -B -V install -P -use-docker-for-it
+  - ./mvnw -Dpostgres-db-it.port=5432 -Dapp.datasource-pg.username=postgres -Dapp.datasource-pg.password= -DskipTests=true -Dmaven.javadoc.skip=true -B -V install -P -use-docker-for-it
 script:
-  - ./mvnw -Dpostgres-db-it.port=5432 -Dapp.datasource_pg.username=postgres -Dapp.datasource_pg.username= verify -P -use-docker-for-it
+  - ./mvnw -Dpostgres-db-it.port=5432 -Dapp.datasource-pg.username=postgres -Dapp.datasource-pg.password= verify -P -use-docker-for-it
 cache:
   directories:
   - $HOME/.m2
