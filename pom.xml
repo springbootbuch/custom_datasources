@@ -51,10 +51,6 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
@@ -69,7 +65,7 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>0.20.0</version>
+                <version>0.20.1</version>
                 <configuration>
                     <images>
                         <image>
@@ -84,27 +80,8 @@
                                     <port>5432:5432</port>                  
                                 </ports>              
                                 <wait>
-                                    <log>database system is ready to accept connections</log>
+                                    <log>(?s)database system is ready to accept connections.*database system is ready to accept connections</log>
                                     <time>40000</time>
-                                </wait>
-                            </run>
-                        </image>
-                        <image>
-                            <name>mysql:5.7</name>
-                            <alias>mysql-db</alias>
-                            <run>
-                                <env>
-                                    <MYSQL_DATABASE>spring_mysql</MYSQL_DATABASE>
-                                    <MYSQL_USER>spring_mysql</MYSQL_USER>
-                                    <MYSQL_PASSWORD>spring_mysql</MYSQL_PASSWORD>
-                                    <MYSQL_RANDOM_ROOT_PASSWORD>yes</MYSQL_RANDOM_ROOT_PASSWORD>
-                                </env>
-                                  <ports>
-                                    <port>3306:3306</port>                  
-                                </ports> 
-                                <wait>
-                                    <log>port: 3306  MySQL Community Server</log>
-                                    <time>120000</time>
                                 </wait>
                             </run>
                         </image>
@@ -125,14 +102,6 @@
                                         <ports>
                                             <port>postgres-db-it.port:5432</port>
                                         </ports>                                       
-                                    </run>
-                                </image>
-                                <image>                                    
-                                    <alias>mysql-db</alias>
-                                    <run>
-                                        <ports>
-                                            <port>mysql-db-it.port:3306</port>
-                                        </ports>
                                     </run>
                                 </image>
                             </images>
@@ -163,7 +132,6 @@
                     <reuseForks>true</reuseForks>
                     <environmentVariables>
                         <postgres.port>${postgres-db-it.port}</postgres.port>
-                        <mysql.port>${mysql-db-it.port}</mysql.port>
                     </environmentVariables>
                 </configuration>
             </plugin>

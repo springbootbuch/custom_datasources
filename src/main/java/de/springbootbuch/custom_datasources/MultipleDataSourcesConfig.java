@@ -27,19 +27,19 @@ public class MultipleDataSourcesConfig {
 	}
 	
 	@Bean	
-	@ConfigurationProperties("app.datasource-mysql")
-	public DataSourceProperties dataSourceMySqlProperties() {
+	@ConfigurationProperties("app.datasource-h2")
+	public DataSourceProperties dataSourceH2Properties() {
 		return new DataSourceProperties();
 	}
 
 	@Bean	
-	@ConfigurationProperties("app.datasource-mysql")
-	public DataSource dataSourceMySql(
-		@Qualifier("dataSourceMySqlProperties")
+	@ConfigurationProperties("app.datasource-h2")
+	public DataSource dataSourceH2(
+		@Qualifier("dataSourceH2Properties")
 		final DataSourceProperties properties
 	) {	
 		// Alternativly, you can use
-		// dataSourceMySqlProperties()
+		// dataSourceH2Properties()
 		// instead of a qualifier
 		return properties
 			.initializeDataSourceBuilder().build();

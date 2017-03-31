@@ -31,8 +31,8 @@ public class MultipleDataSourcesConfigIT {
 	private DataSource dataSource;
 
 	@Autowired
-	@Qualifier("dataSourceMySql")
-	private DataSource dataSourceMySql;
+	@Qualifier("dataSourceH2")
+	private DataSource dataSourceH2;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -44,9 +44,9 @@ public class MultipleDataSourcesConfigIT {
 				containsString("jdbc:postgresql://127.0.0.1:"));
 		}
 
-		try (Connection con = dataSourceMySql.getConnection()) {
+		try (Connection con = dataSourceH2.getConnection()) {
 			assertThat(con.getMetaData().getURL(),
-				containsString("jdbc:mysql://127.0.0.1:"));
+				containsString("jdbc:h2:mem:test_mem"));
 		}
 	}
 
@@ -60,12 +60,12 @@ public class MultipleDataSourcesConfigIT {
 
 	@Test
 	public void noMigrationOnOther() throws SQLException {
-		try (Connection con = dataSourceMySql.getConnection()) {
+		try (Connection con = dataSourceH2.getConnection()) {
 			final ResultSet rs = con.createStatement().executeQuery(""
 				+ " SELECT count(*)"
 				+ "   FROM information_schema.tables"
-				+ "  WHERE table_schema = 'spring_mysql'"
-				+ "    AND table_name = 'test'\n"
+				+ "  WHERE table_catalog = 'TEST_MEM'"
+				+ "    AND table_name = 'TEST'\n"
 				+ "  LIMIT 1"
 			);
 			rs.next();
