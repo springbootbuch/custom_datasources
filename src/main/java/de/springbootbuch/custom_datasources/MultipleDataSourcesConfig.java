@@ -13,13 +13,13 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 public class MultipleDataSourcesConfig {
 	@Primary @Bean	
-	@ConfigurationProperties("app.datasource")
+	@ConfigurationProperties("app.datasource-pg")
 	public DataSourceProperties dataSourceProperties() {
 		return new DataSourceProperties();
 	}
 
 	@Primary @Bean	
-	@ConfigurationProperties("app.datasource")
+	@ConfigurationProperties("app.datasource-pg")
 	public DataSource dataSource(
 		final DataSourceProperties properties) {
 		return properties
