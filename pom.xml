@@ -55,67 +55,43 @@
 
     <build>
         <finalName>${project.artifactId}</finalName>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>0.20.1</version>
+                    <configuration>
+                        <images>
+                            <image>
+                                <name>postgres:9.6.2</name>
+                                <alias>postgres-db</alias>
+                                <run>
+                                    <env>
+                                        <POSTGRES_USER>spring_postgres</POSTGRES_USER>
+                                        <POSTGRES_PASSWORD>spring_postgres</POSTGRES_PASSWORD>
+                                    </env>              
+                                    <ports>
+                                        <port>5432:5432</port>                  
+                                    </ports>              
+                                    <wait>
+                                        <log>(?s)database system is ready to accept connections.*database system is ready to accept connections</log>
+                                        <time>40000</time>
+                                    </wait>
+                                </run>
+                            </image>
+                        </images>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>
                     spring-boot-maven-plugin
                 </artifactId>
-            </plugin>
-            <plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>0.20.1</version>
-                <configuration>
-                    <images>
-                        <image>
-                            <name>postgres:9.6.2</name>
-                            <alias>postgres-db</alias>
-                            <run>
-                                <env>
-                                    <POSTGRES_USER>spring_postgres</POSTGRES_USER>
-                                    <POSTGRES_PASSWORD>spring_postgres</POSTGRES_PASSWORD>
-                                </env>              
-                                <ports>
-                                    <port>5432:5432</port>                  
-                                </ports>              
-                                <wait>
-                                    <log>(?s)database system is ready to accept connections.*database system is ready to accept connections</log>
-                                    <time>40000</time>
-                                </wait>
-                            </run>
-                        </image>
-                    </images>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>prepare-it-database</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                        <configuration>
-                            <images>
-                                <image>                                    
-                                    <alias>postgres-db</alias>
-                                    <run>
-                                        <ports>
-                                            <port>postgres-db-it.port:5432</port>
-                                        </ports>                                       
-                                    </run>
-                                </image>
-                            </images>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>remove-it-database</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+            </plugin>           
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
@@ -137,6 +113,52 @@
             </plugin>
         </plugins>
     </build>
+    
+    <profiles>
+        <profile>
+            <id>use-docker-for-it</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <executions>
+                            <!-- Runs before and after integration test -->
+                            <execution>
+                                <id>prepare-it-database</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                                <configuration>
+                                    <images>
+                                        <image>
+                                            <alias>postgres-db</alias>
+                                            <run>
+                                                <ports>
+                                                    <port>postgres-db-it.port:5432</port>
+                                                </ports>
+                                            </run>
+                                        </image>
+                                    </images>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>remove-it-database</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <!-- DELETE ME -->
     <repositories>

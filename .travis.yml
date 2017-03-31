@@ -3,4 +3,10 @@ language: java
 jdk:
 - oraclejdk8
 services:
-- docker
+- postgresql
+before_install:
+  - psql -c 'create database spring_postgres;' -U postgres
+install: 
+  - ./mvnw -Dpostgres-db-it.port=5432 -Dspring.datasource.username=postgres -Dspring.datasource.password= -DskipTests=true -Dmaven.javadoc.skip=true -B -V install -P -use-docker-for-it
+script:
+  - ./mvnw -Dpostgres-db-it.port=5432 -Dspring.datasource.username=postgres -Dspring.datasource.password= verify -P -use-docker-for-it
