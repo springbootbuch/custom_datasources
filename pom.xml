@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>com.vladmihalcea.flexy-pool</groupId>
-            <artifactId>flexy-tomcatcp</artifactId>
+            <artifactId>flexy-hikaricp</artifactId>
             <version>1.2.7</version>
         </dependency>
         <dependency>

@@ -1,7 +1,7 @@
 package de.springbootbuch.custom_datasources;
 
 import com.vladmihalcea.flexypool.FlexyPoolDataSource;
-import com.vladmihalcea.flexypool.adaptor.TomcatCPPoolAdapter;
+import com.vladmihalcea.flexypool.adaptor.HikariCPPoolAdapter;
 import com.vladmihalcea.flexypool.config.Configuration.Builder;
 import com.vladmihalcea.flexypool.strategy.IncrementPoolOnTimeoutConnectionAcquiringStrategy;
 import com.vladmihalcea.flexypool.strategy.RetryConnectionAcquiringStrategy;
@@ -24,7 +24,7 @@ public class FlexyPoolExampleConfig {
 			new Builder(
 				dataSourceProperties.getName(),
 				dataSource,
-				TomcatCPPoolAdapter.FACTORY
+				HikariCPPoolAdapter.FACTORY
 			).build(),
 			new IncrementPoolOnTimeoutConnectionAcquiringStrategy
 				.Factory(5),
