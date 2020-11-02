@@ -1,21 +1,24 @@
 package de.springbootbuch.custom_datasources;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.*;
+
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+
 import javax.sql.DataSource;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("better-builder-usage")
 @JdbcTest(includeFilters = @ComponentScan.Filter(Configuration.class))
 @AutoConfigureTestDatabase(replace = NONE)
@@ -27,8 +30,8 @@ public class BetterBuilderUsageConfigTest {
 	@Test
 	public void configShouldWork() throws SQLException {
 		final DatabaseMetaData metaData = dataSource.getConnection().getMetaData();
-		assertEquals("jdbc:h2:mem:mydb", metaData.getURL());
-		assertEquals("foobar", metaData.getUserName().toLowerCase());
+		assertThat("jdbc:h2:mem:mydb").isEqualTo(metaData.getURL());
+		assertThat("foobar").isEqualTo(metaData.getUserName().toLowerCase());
 	}
 	
 }

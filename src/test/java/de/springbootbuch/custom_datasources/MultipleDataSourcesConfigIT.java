@@ -1,26 +1,27 @@
 package de.springbootbuch.custom_datasources;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.*;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import javax.sql.DataSource;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("multiple-data-sources")
 @JdbcTest(includeFilters = 
 	@ComponentScan.Filter(Configuration.class))
@@ -40,13 +41,13 @@ public class MultipleDataSourcesConfigIT {
 	@Test
 	public void configShouldWork() throws SQLException {
 		try (Connection con = dataSource.getConnection()) {
-			assertThat(con.getMetaData().getURL(),
-				containsString("jdbc:postgresql://127.0.0.1:"));
+			assertThat(con.getMetaData().getURL())
+				.contains("jdbc:postgresql://127.0.0.1:");
 		}
 
 		try (Connection con = dataSourceH2.getConnection()) {
-			assertThat(con.getMetaData().getURL(),
-				containsString("jdbc:h2:mem:test_mem"));
+			assertThat(con.getMetaData().getURL())
+				.contains("jdbc:h2:mem:test_mem");
 		}
 	}
 
@@ -55,7 +56,7 @@ public class MultipleDataSourcesConfigIT {
 		String foo
 			= this.jdbcTemplate.queryForObject(
 				"Select foo from test", String.class);
-		assertThat(foo, is("bar"));
+		assertThat(foo).isEqualTo("bar");
 	}
 
 	@Test
@@ -69,7 +70,7 @@ public class MultipleDataSourcesConfigIT {
 				+ "  LIMIT 1"
 			);
 			rs.next();
-			assertThat(rs.getInt(1), is(0));
+			assertThat(rs.getInt(1)).isEqualTo(0);
 		}		
 	}
 }
